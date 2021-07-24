@@ -131,7 +131,7 @@
                 </tr>
               </tbody>
             </table>
-            <p class="mt-3 mb-1">訂單成立時間：2021-01-12 03:37:01</p>
+            <p class="mt-3 mb-1">訂單成立時間：{{time}}</p>
             <p class="mb-1">餐點數： 1</p>
             <p class="mb-1">付款狀態：未付款</p>
             <p class="text-end mt-auto">共 NT$ {{totalPrice}} 元</p>
@@ -143,6 +143,7 @@
       const App = {
         data() {
           return {
+            time:'',
             productTotal:[],
             productList:[],
             productTemp:{},
@@ -315,7 +316,7 @@
           addTotal(){
             // this.productTotal.push(this.productList);
             this.productTotal=[... this.productList];
-
+            this.time=new Date().toLocaleString(); //JS 把陣列 Array 轉成字串與本地化的 toLocaleString()
             console.log('listTotal',this.productTotal);
 
             
