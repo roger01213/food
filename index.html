@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://unpkg.com/vue@next"></script>
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app">
+        <div class="container gx-2">
+          <div class="row gx-3 bg-light py-3">
+            <div class="col-md-4">
+              <div class="list-group" v-for="item in products" :key="item.name" @click="additem(item)">
+                <a href="#" class="list-group-item list-group-item-action">
+                  <h6 class="card-title mb-1">{{item.name}}</h6>
+                  <div class="d-flex align-items-center justify-content-between">
+                    <p class="mb-0"><small>{{item.engName}}</small></p>
+                    <p class="mb-0"><small>NT$ {{item.price}}</small></p>
+                  </div>
+                </a>
+              </div>
+            </div>
+            <div class="col-md-8">
+              <div class="card mb-2">
+                <!-- <div class="position-absolute text-white d-flex align-items-center justify-content-center" style="top: 0;bottom: 0;left: 0;right: 0;background-color: rgba(0, 0, 0, 0.65); z-index: 100;">請先選擇飲品</div> -->
+                <div class="card-body px-4">
+                  <div class="mb-3">
+                    <label for="productNum" class="form-label">數量</label>
+                    <input type="number" v-model="temp.productNum" class="form-control" id="productNum" placeholder="數量" min="0">
+                  </div>
+                  <div class="mb-3">
+                    <label for="productNum" class="form-label d-block">冰塊*</label>
+                    <div class="form-check form-check-inline" v-for="(item,i) in iceType" :key="item">
+                      <input class="form-check-input" v-model="temp.iceType" :value="item" name="iceType" type="radio" :id="item">
+                      <label class="form-check-label" :for="item">{{item}}</label>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label for="productNum" class="form-label d-block">甜度*</label>
+                    <div class="form-check form-check-inline" v-for="(item,i) in sugarType" :key="item">
+                      <input class="form-check-input" v-model="temp.sugarType" :value="item"  name="sugarType" type="radio" :id="item">
+                      <label class="form-check-label" :for="item">{{item}}</label>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label for="productNum" class="form-label d-block">加料</label>
+                    <div class="form-check form-check-inline" v-for="(item,i) in toppingsType" :key="item">
+                      <input class="form-check-input" v-model="temp.toppingsType" :value="item"  type="checkbox" :id="item">
+                      <label class="form-check-label" :for="item">{{item}}</label>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label for="productNotice" class="form-label">備註</label>
+                    <textarea class="form-control" v-model="temp.textarea" id="productNotice" rows="2"></textarea>
+                  </div>
+                  <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary w-100" type="button" @click="cancel()">取消</button>
+                    <button class="btn btn-primary w-100" type="button" @click="addedit">加入</button>
+                  </div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-body">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th scope="col">品項</th>
+                        <th scope="col">冰塊</th>
+                        <th scope="col">甜度</th>
+                        <th scope="col">加料</th>
+                        <th scope="col">單價</th>
+                        <th scope="col">數量</th>
+                        <th scope="col">小計</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="(item,i) in productList" :key="item.name">
+                        <th scope="row">{{item.name}}<br>
+                          <small class="text-muted fw-normal">備註：{{item.textarea}}</small>
+                        </th> 
+                        <!-- <td>{{item.defaults.ice}}</td>
+                        <td>{{item.defaults.sugar}}</td>
+                        <td>{{item.defaults.toppings}}</td> -->
+                        <td>{{item.defaults.iceType}}</td>
+                        <td>{{item.defaults.sugarType}}</td>
+                        <td>{{item.defaults.toppingsType}}</td>
+                        <td>{{item.price}}</td>
+                        <td>{{item.productNum}}</td>
+                        <td class="text-end">{{item.totalitemprice}}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <p class="text-end">共 NT$ {{addPrice}} 元</p>
+                  <button class="btn btn-sm btn-secondary w-100" type="button" @click="addTotal">產生訂單</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="bg-light p-3 mt-3">
+          <div class="bg-white p-3 d-flex flex-column" style="min-height: 450px;">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">品項</th>
+                  <th scope="col">冰塊</th>
+                  <th scope="col">甜度</th>
+                  <th scope="col">加料</th>
+                  <th scope="col">單價</th>
+                  <th scope="col">數量</th>
+                  <th scope="col">小計</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(item,i) in productTotal" :key="item.name"> 
+                  <th scope="row">{{item.name}}<br>
+                    <small class="text-muted fw-normal">備註：{{item.textarea}}</small>
+                  </th>
+                  <td>{{item.defaults.iceType}}</td>
+                  <td>{{item.defaults.sugarType}}</td>
+                  <td>{{item.defaults.toppingsType}}</td>
+                  <td>{{item.price}}</td>
+                  <td>{{item.productNum}}</td>
+                  <td class="text-end">{{item.totalitemprice}}</td>
+                </tr>
+              </tbody>
+            </table>
+            <p class="mt-3 mb-1">訂單成立時間：2021-01-12 03:37:01</p>
+            <p class="mb-1">餐點數： 1</p>
+            <p class="mb-1">付款狀態：未付款</p>
+            <p class="text-end mt-auto">共 NT$ {{totalPrice}} 元</p>
+          </div>
+        </div>
+      </div>
+      
+      <script>
+      const App = {
+        data() {
+          return {
+            productTotal:[],
+            productList:[],
+            productTemp:{},
+            temp:{ 
+              productNum:1,
+              iceType:'',
+              sugarType:'',
+              toppingsType:[],
+              textarea:'',
+            },
+            iceType: ['正常冰', '少冰', '微冰', '去冰', '熱'],
+            sugarType: ['全糖', '七分', '半糖', '三分', '無糖'],
+            toppingsType: ['珍珠', '粉條', '小粉圓', '椰果', '芋頭'],
+            products: [
+              {
+                name: '珍珠鮮奶茶',
+                engName: 'Pearl Milk Tea',
+                price: 60,
+                defaults: {
+                  toppings: ['珍珠'],
+                  sugar: '',
+                  ice: '',
+                }
+              },
+              {
+                name: '椰果鮮奶茶',
+                engName: 'Coconut Milk Tea',
+                price: 60,
+                defaults: {
+                  toppings: ['椰果'],
+                  sugar: '',
+                  ice: '',
+                }
+              },
+              {
+                name: '鮮奶茶',
+                engName: 'Milk Tea',
+                price: 50,
+                defaults: {
+                  toppings: [''],
+                  sugar: '',
+                  ice: '',
+                }
+              },
+              {
+                name: '古意冬瓜茶 (糖固定)',
+                engName: 'Winter Melon Drink',
+                price: 30,
+                defaults: {
+                  toppings: [''],
+                  sugar: '全糖',
+                  ice: '',
+                }
+              },
+              {
+                name: '蜜香紅茶',
+                engName: 'Black Tea',
+                price: 30,
+                defaults: {
+                  toppings: [''],
+                  sugar: '',
+                  ice: '',
+                }
+              },
+              {
+                name: '包種青茶',
+                engName: 'Black Tea',
+                price: 35,
+                defaults: {
+                  toppings: [''],
+                  sugar: '',
+                  ice: '',
+                }
+              },
+              {
+                name: '檸檬烏龍',
+                engName: 'Lemon Oolong Tea',
+                price: 55,
+                defaults: {
+                  toppings: [''],
+                  sugar: '',
+                  ice: '',
+                }
+              },
+              {
+                name: '薑母茶 (熱飲)',
+                engName: 'Ginger Tea',
+                price: 55,
+                defaults: {
+                  toppings: [''],
+                  sugar: '',
+                  ice: '熱',
+                }
+              },
+              {
+                name: '青草茶',
+                engName: 'Herbal Tea',
+                price: 35,
+                defaults: {
+                  toppings: [''],
+                  sugar: '',
+                  ice: '',
+                }
+              },
+              {
+                name: '金桔檸檬',
+                engName: 'Kumquat Lemonade',
+                price: 40,
+                defaults: {
+                  toppings: [''],
+                  sugar: '',
+                  ice: '',
+                }
+              },
+              {
+                name: '柳澄青茶',
+                engName: 'Orange Mountain Tea',
+                price: 45,
+                defaults: {
+                  toppings: [''],
+                  sugar: '',
+                  ice: '',
+                }
+              },
+            ],
+          }
+        },
+        methods:{
+          additem(item){
+            // console.log(item);
+            this.productTemp={...item };
+            console.log(this.productTemp);
+          },
+          addedit(){
+            if(!this.temp.productNum){
+              alert("請選擇數量")
+              return
+            }
+            this.productTemp.productNum=this.temp.productNum;
+            ////(這樣會直接複製記憶體位置造成同一件商品一直被後面改掉)
+            // this.productTemp.defaults.toppings=[...this.temp.toppingsType];
+            // this.productTemp.defaults.sugar=this.temp.sugarType;
+            // this.productTemp.defaults.ice=this.temp.iceType;
+            /////
+            ///(改成直接淺層複製物件)
+            this.productTemp.defaults={...this.temp}
+            ////
+            this.productTemp.textarea=this.temp.textarea;
+            if(this.temp.toppingsType.length==0){
+            this.productTemp.totalitemprice=this.temp.productNum*this.productTemp.price;
+             }
+            this.productTemp.totalitemprice=this.temp.productNum*(this.productTemp.price+this.temp.toppingsType.length*10);
+            this.temp.productNum*this.productTemp.price;
+            // console.log(this.productTemp);
+          //  console.log('this.temp.toppingsType',this.temp.toppingsType)
+          //  console.log('this.productTemp.defaults.toppings',this.productTemp.defaults.toppings)
+
+            this.productList.push(this.productTemp);
+            
+            
+            this.productTemp={ };
+            this.temp={};
+            this.temp.toppingsType=[];
+            console.log('list',this.productList);
+            // console.log('listTotal',this.productTotal);
+
+            // console.log('productTemp',this.productTemp);
+
+          },
+          addTotal(){
+            // this.productTotal.push(this.productList);
+            this.productTotal=[... this.productList];
+
+            console.log('listTotal',this.productTotal);
+
+            
+          },
+          cancel(){
+            this.productTemp={ };
+            // console.log(this.productTemp);
+          },
+        },
+        computed: {
+     
+          addPrice(){
+            let total=0;
+            this.productList.forEach((item,i)=>{
+              total+=item.totalitemprice;
+              console.log('addPrice',item);
+            })
+            return total;
+          },
+          totalPrice(){
+            let total=0;
+            this.productTotal.forEach((item,i)=>{
+              total+=item.totalitemprice;
+              // console.log('addPrice',item);
+            })
+            return total;
+          },
+        },
+      };
+      
+      Vue.createApp(App).mount('#app');
+      </script>
+</body>
+
+</html>
