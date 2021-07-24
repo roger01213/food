@@ -28,7 +28,8 @@
             </div>
             <div class="col-md-8">
               <div class="card mb-2">
-                <!-- <div class="position-absolute text-white d-flex align-items-center justify-content-center" style="top: 0;bottom: 0;left: 0;right: 0;background-color: rgba(0, 0, 0, 0.65); z-index: 100;">請先選擇飲品</div> -->
+                <!-- 設定黑色區塊 -->
+                <div v-if="!productTemp.price" class="position-absolute text-white d-flex align-items-center justify-content-center" style="top: 0;bottom: 0;left: 0;right: 0;background-color: rgba(0, 0, 0, 0.65); z-index: 100;">請先選擇飲品</div>
                 <div class="card-body px-4">
                   <div class="mb-3">
                     <label for="productNum" class="form-label">數量</label>
@@ -143,6 +144,7 @@
       const App = {
         data() {
           return {
+            isNew: false,
             time:'',
             productTotal:[],
             productList:[],
